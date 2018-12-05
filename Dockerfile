@@ -18,11 +18,12 @@ RUN mkdir -p /home/builder/package/src &&\
 
 RUN mkdir -p /home/builder/package/src/poppler-0.71.0/build &&\
     cd /home/builder/package/src/poppler-0.71.0/build && \
-    CXXFLAGS=-isystem\ /usr/include/openjpeg-2.3 cmake -DCMAKE_INSTALL_PREFIX=/opt/poppler ..
+    CXXFLAGS=-isystem\ /usr/include/openjpeg-2.3 cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
 RUN cd /home/builder/package/src/poppler-0.71.0/build && \
     make install
 
-FROM alpine:latest  
+FROM alpine:latest
+COPY --from=builder /usr/local /usr/local
 RUN apk --no-cache add ca-certificates libjpeg-turbo cairo libxml2 \
                        fontconfig lcms2 \
                        openjpeg \
@@ -30,11 +31,9 @@ RUN apk --no-cache add ca-certificates libjpeg-turbo cairo libxml2 \
 COPY --from=builder /opt/poppler /opt/poppler
 RUN addgroup -S appgroup && \
     adduser -S appuser -G appgroup -h /work && \
-    echo "/opt/poppler/lib64:/lib:/usr/local/lib:/usr/lib" > /etc/ld-musl-x86_64.path
+    echo "/usr/local/lib64:/lib:/usr/local/lib:/usr/lib" > /etc/ld-musl-x86_64.path
 
 USER appuser
 
 WORKDIR /work
-ENV PATH="/opt/poppler/bin:${PATH}"
-
 ENTRYPOINT ["ash"]
