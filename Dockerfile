@@ -25,11 +25,9 @@ RUN cd /home/builder/package/src/poppler-0.71.0/build && \
 FROM alpine:latest
 COPY --from=builder /usr/local /usr/local
 RUN apk --no-cache add ca-certificates libjpeg-turbo cairo libxml2 \
-                       fontconfig lcms2 \
-                       openjpeg \
-                       "gtk+3.0"
-COPY --from=builder /opt/poppler /opt/poppler
-RUN addgroup -S appgroup && \
+                       fontconfig lcms2 openjpeg tiff \
+                       libstdc++ && \
+    addgroup -S appgroup && \
     adduser -S appuser -G appgroup -h /work && \
     echo "/usr/local/lib64:/lib:/usr/local/lib:/usr/lib" > /etc/ld-musl-x86_64.path
 
