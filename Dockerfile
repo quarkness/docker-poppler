@@ -34,4 +34,3 @@ RUN apk --no-cache add ca-certificates libjpeg-turbo cairo libxml2 \
 USER appuser
 
 WORKDIR /work
-ENTRYPOINT ["ash"]
